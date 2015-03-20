@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>zn-carousel</title>
+    <link rel="import" href="zn-carousel.html">
+
+    <style>
+      zn-slide {
+        width: 100px;
+        margin: 10px;
+      }
+    </style>
+</head>
+<body>
+  <div class="media media--thumb">
+    <img class="media__img media__img--block" />
+    <div class="media__body">
+      <div class="media__title"></div>
+      <div class="media__description"></div>
+      <div class="media__note"></div>
+    </div>
+  </div>
+
+  <zn-carousel class="js-carousel">
+    <zn-slide>
+      1
+    </zn-slide>
+    <zn-slide>2</zn-slide>
+    <zn-slide>3</zn-slide>
+    <zn-slide>4</zn-slide>
+    <zn-slide>5</zn-slide>
+    <zn-slide>6</zn-slide>
+  </zn-carousel>
+  <script>
+    (function () {
+      document.querySelector('.js-carousel').init();
+    })();
+  </script>
+</body>
+</html>

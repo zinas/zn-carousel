@@ -1,0 +1,167 @@
+<script>
+(function() {
+  var carousel = Object.create(HTMLElement.prototype);
+
+  /**
+   * Default custom element callback.
+   * This gets triggered when the element is created,
+   * but before being attached to the DOM
+   * @return {null}
+   */
+  carousel.createdCallback = function() {
+    // This 3 lines are more or less the standard bootstraping
+    //  needed to use a custom elememt:
+    // Get the scope of the document from the html import, create the shadow root and
+    // attach the content of the template in the shadow root
+    this.carouselDocument = document.querySelector('link[href*=zn-carousel]').import;
+    this.shadow = this.createShadowRoot();
+    this.shadow.appendChild(this.carouselDocument.querySelector('#zn-carousel-template').content);
+
+  };
+
+  /**
+   * Caches all the elements to avoid parsing the DOM multiple times
+   * @return {null}
+   */
+  carousel.setupCache = function () {
+    this.nextButton = this.shadow.querySelector('.js-next');
+    this.previousButton = this.shadow.querySelector('.js-previous');
+    this.wrapper = this.shadow.querySelector('#carousel-wrapper');
+    this.slides = this.querySelectorAll('zn-slide');
+
+    this.slideWidth =
+      this.slides[0].offsetWidth +
+      parseInt(getComputedStyle(this.slides[0]).marginLeft) +
+      parseInt(getComputedStyle(this.slides[0]).marginRight);
+
+    // Calculate how many thumbs fit into the viewport.
+    // The max number of slide moves you can make should be:
+    // The number of slides minus the slides in the viewport
+    this.maxSteps = this.slides.length - parseInt(this.offsetWidth / this.slideWidth);
+    if ( this.maxSteps < 0 ) {
+      this.maxSteps = 0;
+    }
+  };
+
+  /**
+   * Initialized the carousel, by setting the calculated styles, and binding the events
+   * @return {null}
+   */
+  carousel.init = function () {
+    this.setupCache();
+
+    // Style based on the number and style of thumbs
+    this.wrapper.style.width = (this.querySelectorAll('zn-slide').length * 100) + '%';
+    for (i=0; i<this.slides.length; i++) {
+      this.slides[i].style.left = '0px';
+    }
+
+    // Init vars
+    this.currentSlide = 0;
+
+    // if all slides fit in the viewport, remove the buttons
+    if ( this.maxSteps === 0 ) {
+      this.nextButton.remove();
+      this.previousButton.remove();
+    } else {
+      this.nextButton.addEventListener('click', this.next.bind(this));
+      this.previousButton.addEventListener('click', this.previous.bind(this));
+    }
+  }
+
+  /**
+   * Moves the carousel one position forward, if possible
+   * @return {null}
+   */
+  carousel.next = function () {
+    if ( this.currentSlide === this.maxSteps ) {
+      console.warn('You are pressing next, but there is no next slide');
+      return;
+    }
+    var i;
+    this.currentSlide += 1;
+    for (i=0; i<this.slides.length; i++) {
+      this.slides[i].style.left = '-' + (this.slideWidth * this.currentSlide) + 'px';
+    }
+  }
+
+  /**
+   * Moves the carousel one position backwards, if possible
+   * @return {null}
+   */
+  carousel.previous = function () {
+    if ( this.currentSlide === 0 ) {
+      console.warn('You are pressing previous, but there is no previous slide');
+      return;
+    }
+    var i;
+    this.currentSlide -= 1;
+    for (i=0; i<this.slides.length; i++) {
+      this.slides[i].style.left = '-' + (this.slideWidth * this.currentSlide) + 'px';
+    }
+  }
+
+  // W3C
+  // Registering the custom element with the browser
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/registerElement
+  document.registerElement('zn-carousel', {
+    prototype: carousel
+  });
+
+  // W3C
+  // Registering the custom element with the browser
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/registerElement
+  //
+  // We still have to register this element, even if we won't add any custom
+  // functionality
+  document.registerElement('zn-slide', {
+    prototype: Object.create(HTMLElement.prototype)
+  });
+
+}());
+</script>
+<!--
+  W3C
+  Templates is a new feature of the browsers
+  http://www.w3.org/TR/html-templates/
+-->
+<template id="zn-carousel-template">
+  <!--
+    A few new browser features appear here.
+    1) Scoped styles: any styles here apply only for the custom element.
+        Even something like h1 { color: red !important; } won't affect
+        the parent document and any elements there
+    2) CSS selectors specific for the shadow DOM
+      :host, ::content are defined with the new W3C web compoenents spec
+      http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/
+  -->
+  <style>
+  :host {
+    display: block;
+    overflow:hidden;
+  }
+
+  #carousel-wrapper {
+    position:relative;
+    overflow:hidden;
+  }
+
+  content::content zn-slide {
+    position:relative;
+    float: left;
+    display: block;
+
+    transition: left .3s ease;
+  }
+  </style>
+  <div id="carousel-wrapper">
+    <content select="zn-slide"></content>
+  </div>
+  <!--
+    I really prefer using different classes for
+    styling and for binding events. For the later,
+    I namespace them with the js- prefix
+  -->
+  <button class="js-next">Next</button>
+  <button class="js-previous">Previous</button>
+</template>
