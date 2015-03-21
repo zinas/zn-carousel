@@ -1,5 +1,7 @@
 <script>
 (function() {
+  'use strict';
+
   var carousel = Object.create(HTMLElement.prototype);
 
   /**
@@ -30,7 +32,14 @@
     this.slides = this.querySelectorAll('zn-slide');
   };
 
+  /**
+   * Sets the dimensions of the elements needed (slides and wrapper), and makes
+   * calculations to see if the next/previous functionality is needed or not
+   * @return {[type]}
+   */
   carousel.setupDimensions = function () {
+    var i;
+
     this.computedWidth = parseInt(getComputedStyle(this).width);
 
     this.slideWidth =
@@ -114,14 +123,12 @@
     }
   }
 
-  // W3C
   // Registering the custom element with the browser
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/registerElement
   document.registerElement('zn-carousel', {
     prototype: carousel
   });
 
-  // W3C
   // Registering the custom element with the browser
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/registerElement
   //
