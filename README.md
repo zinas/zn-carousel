@@ -1,2 +1,2 @@
 # zn-carousel
-Responsive carousel, created with web components
+Fluid carousel, created with web components
