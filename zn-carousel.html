@@ -26,18 +26,36 @@
   carousel.setupCache = function () {
     this.nextButton = this.shadow.querySelector('.js-next');
     this.previousButton = this.shadow.querySelector('.js-previous');
-    this.wrapper = this.shadow.querySelector('#carousel-wrapper');
+    this.wrapper = this.shadow.querySelector('.slide-wrapper');
     this.slides = this.querySelectorAll('zn-slide');
+  };
+
+  carousel.setupDimensions = function () {
+    this.computedWidth = parseInt(getComputedStyle(this).width);
 
     this.slideWidth =
       this.slides[0].offsetWidth +
       parseInt(getComputedStyle(this.slides[0]).marginLeft) +
       parseInt(getComputedStyle(this.slides[0]).marginRight);
 
+    for (i=0; i<this.slides.length; i++) {
+      this.slides[i].style.left = '0px';
+    }
+
+    this.fits = this.slideWidth * this.slides.length < this.computedWidth;
+
+    if ( !this.fits ) {
+      this.classList.add('zn-carousel--with-buttons');
+    }
+
+    // Style based on the number and style of thumbs
+    this.wrapper.style.width = (this.querySelectorAll('zn-slide').length * 100) + '%';
+
+
     // Calculate how many thumbs fit into the viewport.
     // The max number of slide moves you can make should be:
     // The number of slides minus the slides in the viewport
-    this.maxSteps = this.slides.length - parseInt(this.offsetWidth / this.slideWidth);
+    this.maxSteps = this.slides.length - parseInt(this.computedWidth / this.slideWidth);
     if ( this.maxSteps < 0 ) {
       this.maxSteps = 0;
     }
@@ -49,18 +67,13 @@
    */
   carousel.init = function () {
     this.setupCache();
-
-    // Style based on the number and style of thumbs
-    this.wrapper.style.width = (this.querySelectorAll('zn-slide').length * 100) + '%';
-    for (i=0; i<this.slides.length; i++) {
-      this.slides[i].style.left = '0px';
-    }
+    this.setupDimensions();
 
     // Init vars
     this.currentSlide = 0;
 
     // if all slides fit in the viewport, remove the buttons
-    if ( this.maxSteps === 0 ) {
+    if ( this.fits === 0 ) {
       this.nextButton.remove();
       this.previousButton.remove();
     } else {
@@ -138,12 +151,38 @@
   <style>
   :host {
     display: block;
+  }
+
+  :host(.zn-carousel--with-buttons) {
+    width: calc(100% - 100px);
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .carousel {
+    overflow:hidden;
+    width: 100%;
+  }
+  .slide-wrapper {
+    position:relative;
     overflow:hidden;
   }
 
-  #carousel-wrapper {
-    position:relative;
-    overflow:hidden;
+  .carousel-button {
+    width: 40px;
+    line-height: 40px;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    top: calc(50% - 20px);
+  }
+
+  .carousel-button--next {
+    right: -50px;
+  }
+  .carousel-button--previous {
+    left: -50px;
   }
 
   content::content zn-slide {
@@ -154,14 +193,16 @@
     transition: left .3s ease;
   }
   </style>
-  <div id="carousel-wrapper">
-    <content select="zn-slide"></content>
+  <div class="carousel">
+    <div class="slide-wrapper">
+      <content select="zn-slide"></content>
+    </div>
   </div>
   <!--
     I really prefer using different classes for
     styling and for binding events. For the later,
     I namespace them with the js- prefix
   -->
-  <button class="js-next">Next</button>
-  <button class="js-previous">Previous</button>
+  <a class="carousel-button carousel-button--next js-next">&gt;</a>
+  <a class="carousel-button carousel-button--previous js-previous">&lt;</a>
 </template>

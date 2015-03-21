@@ -1,0 +1,23 @@
+{
+  "name": "zn-carousel",
+  "version": "0.2.0",
+  "homepage": "https://github.com/zinas/zn-carousel",
+  "authors": [
+    "Nikos Zinas <zinas.nikos@gmail.com>"
+  ],
+  "description": "Simple responsive carousel, created only with web components",
+  "main": "zn-carousel.html",
+  "keywords": [
+    "web compoents",
+    "carousel",
+    "vanillajs"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
