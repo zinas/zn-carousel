@@ -55,6 +55,7 @@
 
     if ( !this.fits ) {
       this.classList.add('zn-carousel--with-buttons');
+      this.computedWidth = parseInt(getComputedStyle(this).width);
     }
 
     // Style based on the number and style of thumbs
